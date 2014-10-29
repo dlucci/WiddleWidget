@@ -9,6 +9,7 @@
         android:permissionGroup="android.permission-group.HARDWARE_CONTROLS"
         android:protectionLevel="normal"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
         android:allowBackup="true"

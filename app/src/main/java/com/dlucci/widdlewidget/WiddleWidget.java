@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera;
+import android.provider.Settings;
+import java.lang.System;
 /**
  * Created by dlucci on 10/27/14.
  */
@@ -48,6 +50,13 @@ public class WiddleWidget extends AppWidgetProvider{
             PendingIntent fpi = PendingIntent.getBroadcast(context, 0, flashlightIntent, 0);
             views.setOnClickPendingIntent(R.id.light, fpi);
             appWidgetManager.updateAppWidget(appWidgetIds[i], views);
+
+            Intent airplaneIntent = new Intent(context, this.getClass());
+            airplaneIntent.setAction(AIRPLANE_ACTION);
+
+            PendingIntent api = PendingIntent.getBroadcast(context, 0, airplaneIntent, 0);
+            views.setOnClickPendingIntent(R.id.airplane, api);
+            appWidgetManager.updateAppWidget(appWidgetIds[i], views);
         }
     }
 
@@ -62,7 +71,6 @@ public class WiddleWidget extends AppWidgetProvider{
             else
                 manager.setWifiEnabled(true);
         } else if(action.equals(FLASHLIGHT_ACTION)){
-            Log.d(TAG, "inside of FLAHSLIGHT_ACTION with flashOn = " + flashOn);
 
             if(flashOn){
                 cam.stopPreview();
@@ -76,6 +84,15 @@ public class WiddleWidget extends AppWidgetProvider{
                 cam.startPreview();
                 flashOn = true;
             }
+        } else if(action.equals(AIRPLANE_ACTION)){
+            boolean isEnabled = Settings.System.getInt(
+                    context.getContentResolver(),
+                    Settings.System.AIRPLANE_MODE_ON, 0) == 1;
+
+            Settings.System.putInt(
+                    context.getContentResolver(),
+                    Settings.System.AIRPLANE_MODE_ON, isEnabled ? 0 : 1);
+
         }
 
         super.onReceive(context, i);
