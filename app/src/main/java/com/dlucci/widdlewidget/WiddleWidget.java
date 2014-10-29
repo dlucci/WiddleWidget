@@ -26,6 +26,8 @@ public class WiddleWidget extends AppWidgetProvider{
 
     private static boolean flashOn = false;
 
+    private static Camera cam;
+
     @Override public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
         for(int i = 0; i < appWidgetIds.length; i++) {
@@ -60,12 +62,14 @@ public class WiddleWidget extends AppWidgetProvider{
             else
                 manager.setWifiEnabled(true);
         } else if(action.equals(FLASHLIGHT_ACTION)){
-            Camera cam = Camera.open();
+            Log.d(TAG, "inside of FLAHSLIGHT_ACTION with flashOn = " + flashOn);
+
             if(flashOn){
                 cam.stopPreview();
                 cam.release();
                 flashOn = false;
             } else {
+                cam = Camera.open();
                 Parameters p = cam.getParameters();
                 p.setFlashMode(Parameters.FLASH_MODE_TORCH);
                 cam.setParameters(p);
