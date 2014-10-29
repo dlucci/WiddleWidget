@@ -9,7 +9,8 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.RemoteViews;
-
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera;
 /**
  * Created by dlucci on 10/27/14.
  */
@@ -23,31 +24,56 @@ public class WiddleWidget extends AppWidgetProvider{
 
     private Button wifi, airplane, flashlight;
 
+    private static boolean flashOn = false;
+
     @Override public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
+        for(int i = 0; i < appWidgetIds.length; i++) {
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widdlewidget_layout);
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widdlewidget_layout);
+            Intent wifiIntent = new Intent(context, this.getClass());
+            wifiIntent.setAction(WIFI_ACTION);
 
-        Intent wifiIntent = new Intent(context, WiddleWidget.class);
-        wifiIntent.setAction(WIFI_ACTION);
+            PendingIntent pi = PendingIntent.getBroadcast(context, 0, wifiIntent, 0);
 
-        PendingIntent pi;
-        pi =  PendingIntent.getBroadcast(context, 0 , wifiIntent, 0);
+            Log.d(TAG, "finishing up onUpdate");
+            views.setOnClickPendingIntent(R.id.wifi, pi);
+            appWidgetManager.updateAppWidget(appWidgetIds[i], views);
 
-        Log.d(TAG, "finishing up onUpdate");
-        views.setOnClickPendingIntent(R.id.wifi, pi);
+            Intent flashlightIntent = new Intent(context, this.getClass());
+            flashlightIntent.setAction(FLASHLIGHT_ACTION);
 
+            PendingIntent fpi = PendingIntent.getBroadcast(context, 0, flashlightIntent, 0);
+            views.setOnClickPendingIntent(R.id.light, fpi);
+            appWidgetManager.updateAppWidget(appWidgetIds[i], views);
+        }
     }
 
     @Override public void onReceive(Context context, Intent i){
         Log.d(TAG, "onReceive");
         String action  = i.getAction();
-        if(i.equals(WIFI_ACTION)){
+        Log.d(TAG, "Action is " + action);
+        if(action.equals(WIFI_ACTION)){
             WifiManager manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
             if(manager.isWifiEnabled())
                 manager.setWifiEnabled(false);
             else
                 manager.setWifiEnabled(true);
+        } else if(action.equals(FLASHLIGHT_ACTION)){
+            Camera cam = Camera.open();
+            if(flashOn){
+                cam.stopPreview();
+                cam.release();
+                flashOn = false;
+            } else {
+                Parameters p = cam.getParameters();
+                p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+                cam.setParameters(p);
+                cam.startPreview();
+                flashOn = true;
+            }
         }
+
+        super.onReceive(context, i);
     }
 }
