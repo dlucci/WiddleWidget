@@ -74,6 +74,7 @@ public class WiddleWidget extends AppWidgetProvider{
 
             if(flashOn){
                 cam.stopPreview();
+                cam.unlock();
                 cam.release();
                 flashOn = false;
             } else {
@@ -82,6 +83,7 @@ public class WiddleWidget extends AppWidgetProvider{
                 p.setFlashMode(Parameters.FLASH_MODE_TORCH);
                 cam.setParameters(p);
                 cam.startPreview();
+                cam.lock();
                 flashOn = true;
             }
         } else if(action.equals(AIRPLANE_ACTION)){
