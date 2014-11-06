@@ -35,29 +35,24 @@ public class WiddleWidget extends AppWidgetProvider{
         for(int i = 0; i < appWidgetIds.length; i++) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widdlewidget_layout);
 
-            Intent wifiIntent = new Intent(context, this.getClass());
-            wifiIntent.setAction(WIFI_ACTION);
+            Intent btnAction = new Intent(context, this.getClass());
+            btnAction.setAction(WIFI_ACTION);
 
-            PendingIntent pi = PendingIntent.getBroadcast(context, 0, wifiIntent, 0);
+            PendingIntent pi = PendingIntent.getBroadcast(context, 0, btnAction, 0);
 
             Log.d(TAG, "finishing up onUpdate");
             views.setOnClickPendingIntent(R.id.wifi, pi);
             appWidgetManager.updateAppWidget(appWidgetIds[i], views);
 
-            Intent flashlightIntent = new Intent(context, this.getClass());
-            flashlightIntent.setAction(FLASHLIGHT_ACTION);
-
-            PendingIntent fpi = PendingIntent.getBroadcast(context, 0, flashlightIntent, 0);
-            views.setOnClickPendingIntent(R.id.light, fpi);
+            btnAction.setAction(FLASHLIGHT_ACTION);
+            pi = PendingIntent.getBroadcast(context, 0, btnAction, 0);
+            views.setOnClickPendingIntent(R.id.light, pi);
             appWidgetManager.updateAppWidget(appWidgetIds[i], views);
-
-            Intent airplaneIntent = new Intent(context, this.getClass());
-            airplaneIntent.setAction(AIRPLANE_ACTION);
-
-            PendingIntent api = PendingIntent.getBroadcast(context, 0, airplaneIntent, 0);
-            views.setOnClickPendingIntent(R.id.airplane, api);
+            btnAction.setAction(AIRPLANE_ACTION);
+            pi = PendingIntent.getBroadcast(context, 0, btnAction, 0);
+            views.setOnClickPendingIntent(R.id.airplane, pi);
             appWidgetManager.updateAppWidget(appWidgetIds[i], views);
-        }
+         }
     }
 
     @Override public void onReceive(Context context, Intent i){
